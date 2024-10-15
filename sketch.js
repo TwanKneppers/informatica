@@ -76,6 +76,13 @@ class Jos {
       }
   }
   
+  eetAppel(appel) {
+    if (this.x == appel.x && this.y == appel.y && !appel.opgegeten) {
+      appel.opgegeten = true;
+      this.levens += 1;
+    }
+  }
+  
   toon() {
     image(this.animatie[this.frameNummer],this.x,this.y,raster.celGrootte,raster.celGrootte);
   }
@@ -107,6 +114,7 @@ class AppelStil {
     this.x = x;
     this.y = y;
     this.sprite = null;
+    this.opgegeten = false;
   }
   
   toon() {
@@ -115,14 +123,14 @@ class AppelStil {
 }
 
 function preload() {
-  brug = loadImage("images/backgrounds/dame_op_brug_1800.jpg");
+  brug = loadImage('images/backgrounds/dame_op_brug_1800.jpg');
 }
 
 function setup() {
   canvas = createCanvas(900,600);
   canvas.parent();
   frameRate(10);
-  textFont("Verdana");
+  textFont('Verdana');
   textSize(20);
   
   raster = new Raster(12,18);
@@ -132,22 +140,22 @@ function setup() {
   eve = new Jos();
   eve.stapGrootte = 1*raster.celGrootte;
   for (var b = 0;b < 6;b++) {
-    frameEve = loadImage("images/sprites/Eve100px/Eve_" + b + ".png");
+    frameEve = loadImage('images/sprites/Eve100px/Eve_' + b + '.png');
     eve.animatie.push(frameEve);
   }
   eve.levens = 1;
   
   alice = new Vijand(700,200);
   alice.stapGrootte = 1*eve.stapGrootte;
-  alice.sprite = loadImage("images/sprites/Alice100px/Alice.png");
+  alice.sprite = loadImage('images/sprites/Alice100px/Alice.png');
 
   bob = new Vijand(600,400);
   bob.stapGrootte = 1*eve.stapGrootte;
-  bob.sprite = loadImage("images/sprites/Bob100px/Bob.png");
+  bob.sprite = loadImage('images/sprites/Bob100px/Bob.png');
   
   // 50 is celgrootte bij 18 kolommen, 12 is aantal rijen, 18 is aantal kolommen
-  rodeAppel = new AppelStil(50 * Math.floor(Math.random() * 12),50 * Math.floor(Math.random() * 18));
-  rodeAppel.sprite = loadImage("images/sprites/appel_2.png")
+  rodeAppel = new AppelStil(50 * Math.floor(Math.random() * 18),50 * Math.floor(Math.random() * 12));
+  rodeAppel.sprite = loadImage('images/sprites/appel_2.png')
 }
 
 function draw() {
@@ -159,11 +167,15 @@ function draw() {
   eve.toon();
   alice.toon();
   bob.toon();
-  rodeAppel.toon();
+  
+  eve.eetAppel(rodeAppel);
+  if (!rodeAppel.opgegeten) {
+    rodeAppel.toon(); 
+  }
    
   color('black');
   textSize(20);
-  text("Levens: " + eve.levens, 0, 20);
+  text('Levens: ' + eve.levens, 0, 20);
   
   eve.wordtGeraakt(alice);
   eve.wordtGeraakt(bob);
