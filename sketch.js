@@ -122,6 +122,43 @@ class AppelStil {
   }
 }
 
+class AppelBewegend {
+  constructor(x,y) {
+    this.x = x;
+    this.y = y;
+    this.sprite = null;
+    this.opgegeten = false
+    this.richtingX = 1;
+    this.richtingY = 1;;
+  }
+  
+  beweeg() {
+    if (this.x == 0) {
+      this.richtingX = 1;
+    }
+    else if (this.x == canvas.width - raster.celGrootte) {
+      this.richtingX = -1;
+    }
+    
+    if (this.y == 0) {
+      this.richtingY = 1;
+    }
+    else if (this.y == canvas.height - raster.celGrootte) {
+      this.richtingY = -1;
+    }
+    
+    this.x += this.richtingX * raster.celGrootte;
+    this.y += this.richtingY * raster.celGrootte;
+    
+    this.x = constrain(this.x,0,canvas.width - raster.celGrootte);
+    this.y = constrain(this.y,0,canvas.height - raster.celGrootte);
+  }
+  
+  toon() {
+    image(this.sprite,this.x,this.y,raster.celGrootte,raster.celGrootte)
+  }
+}
+
 function preload() {
   brug = loadImage('images/backgrounds/dame_op_brug_1800.jpg');
 }
@@ -153,9 +190,11 @@ function setup() {
   bob.stapGrootte = 1*eve.stapGrootte;
   bob.sprite = loadImage('images/sprites/Bob100px/Bob.png');
   
-  // 50 is celgrootte bij 18 kolommen, 12 is aantal rijen, 18 is aantal kolommen
-  rodeAppel = new AppelStil(50 * Math.floor(Math.random() * 18),50 * Math.floor(Math.random() * 12));
+  rodeAppel = new AppelStil(raster.celGrootte * floor(random() * raster.aantalKolommen),raster.celGrootte * floor(random() * raster.aantalRijen));
   rodeAppel.sprite = loadImage('images/sprites/appel_2.png')
+  
+  groeneAppel = new AppelBewegend(raster.celGrootte * floor(random() * raster.aantalKolommen),raster.celGrootte * floor(random() * raster.aantalRijen));
+  groeneAppel.sprite = loadImage('images/sprites/appel_1.png')
 }
 
 function draw() {
@@ -172,7 +211,14 @@ function draw() {
   if (!rodeAppel.opgegeten) {
     rodeAppel.toon(); 
   }
-   
+  
+  eve.eetAppel(groeneAppel);
+  if (!groeneAppel.opgegeten) {
+    groeneAppel.beweeg();
+    groeneAppel.toon(); 
+  }
+  
+  
   color('black');
   textSize(20);
   text('Levens: ' + eve.levens, 0, 20);
